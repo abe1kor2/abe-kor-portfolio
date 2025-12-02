@@ -10,11 +10,40 @@ export const ContactSection = () => {
   const [cooldown, setCooldown] = React.useState(0);
   const formRef = React.useRef();
 
+  // Check for existing cooldown on mount
+  React.useEffect(() => {
+    const cooldownEnd = localStorage.getItem("contactCooldownEnd");
+    if (cooldownEnd) {
+      const remainingTime = Math.floor(
+        (parseInt(cooldownEnd) - Date.now()) / 1000
+      );
+      if (remainingTime > 0) {
+        setCooldown(remainingTime);
+        startCooldownTimer(remainingTime);
+      } else {
+        localStorage.removeItem("contactCooldownEnd");
+      }
+    }
+  }, []);
+
   // Format cooldown time as MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const startCooldownTimer = (duration) => {
+    const interval = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          localStorage.removeItem("contactCooldownEnd");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   const handleSubmit = async (e) => {
@@ -49,17 +78,12 @@ export const ContactSection = () => {
       // Reset form after successful submission
       formRef.current.reset();
 
-      // Start 5 minute (300 seconds) cooldown
-      setCooldown(300);
-      const interval = setInterval(() => {
-        setCooldown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      // Start 5 minute (300 seconds) cooldown and save to localStorage
+      const cooldownDuration = 300;
+      const cooldownEnd = Date.now() + cooldownDuration * 1000;
+      localStorage.setItem("contactCooldownEnd", cooldownEnd.toString());
+      setCooldown(cooldownDuration);
+      startCooldownTimer(cooldownDuration);
     } catch (error) {
       console.error("EmailJS Error:", error);
       toast({
@@ -196,7 +220,7 @@ export const ContactSection = () => {
                 {isSubmitting
                   ? "Sending..."
                   : cooldown > 0
-                  ? `Wait ${formatTime(cooldown)}`
+                  ? `Cool down ${formatTime(cooldown)}`
                   : "Send Message"}
                 <Send size={16} />
               </button>
