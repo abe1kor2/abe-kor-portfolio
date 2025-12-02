@@ -1,22 +1,76 @@
+import React from "react";
 import { Linkedin, Mail, MapPin, Phone, Send } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useToast } from "../hooks/use-toast.js";
+import emailjs from "@emailjs/browser";
 
 export const ContactSection = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [cooldown, setCooldown] = React.useState(0);
+  const formRef = React.useRef();
 
-  const handleSubmit = (e) => {
+  // Format cooldown time as MM:SS
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is in cooldown period
+    if (cooldown > 0) {
+      toast({
+        title: "Please wait",
+        description: `You can send another message in ${formatTime(cooldown)}.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      await emailjs.sendForm(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
       toast({
         title: "Message Sent!",
         description:
           "Thank you for reaching out. I'll get back to you as soon as possible.",
       });
-    }, 1500);
-    setIsSubmitting(false);
+
+      // Reset form after successful submission
+      formRef.current.reset();
+
+      // Start 5 minute (300 seconds) cooldown
+      setCooldown(300);
+      const interval = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (error) {
+      console.error("EmailJS Error:", error);
+      toast({
+        title: "Failed to send message",
+        description:
+          "Something went wrong. Please try emailing me directly at abe@abekor.com",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <section id="contact" className="py-24 px-4 relative">
@@ -85,12 +139,9 @@ export const ContactSection = () => {
               </div>
             </div>
           </div>
-          <div
-            className="bg-card p-8 rounded-lg shadow-xs"
-            onSubmit={handleSubmit}
-          >
+          <div className="bg-card p-8 rounded-lg shadow-xs">
             <h3 className="text-2xl font-semibold mb-6">Send a Message</h3>
-            <form className=" space-y-6">
+            <form ref={formRef} onSubmit={handleSubmit} className=" space-y-6">
               <div>
                 <label htmlFor="name">Your Name</label>
                 <input
@@ -135,12 +186,18 @@ export const ContactSection = () => {
               </div>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || cooldown > 0}
                 className={cn(
-                  "main-button w-full flex items-center justify-center gap-2"
+                  "main-button w-full flex items-center justify-center gap-2",
+                  (isSubmitting || cooldown > 0) &&
+                    "opacity-50 cursor-not-allowed"
                 )}
               >
-                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting
+                  ? "Sending..."
+                  : cooldown > 0
+                  ? `Wait ${formatTime(cooldown)}`
+                  : "Send Message"}
                 <Send size={16} />
               </button>
             </form>
