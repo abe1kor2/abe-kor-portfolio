@@ -1,4 +1,4 @@
-import { ThemeToggle } from "../components/ThemeToogle";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { StartBackground } from "../components/StartBackground";
 import { Navbar } from "../components/Navbar";
 import { HeroSection } from "../components/HeroSection";
@@ -6,6 +6,7 @@ import { AboutMeSection } from "../components/AboutMeSection";
 import { SkillsSection } from "../components/SkillsSection";
 import { ProjectSection } from "../components/ProjectSection";
 import { ContactSection } from "../components/ContactSection";
+import { Footer } from "../components/Footer";
 
 export const Home = () => {
   return (
@@ -24,6 +25,7 @@ export const Home = () => {
         <SkillsSection />
         <ProjectSection />
         <ContactSection />
+        <Footer />
       </main>
 
       {/* footer */}

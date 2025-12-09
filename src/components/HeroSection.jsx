@@ -16,9 +16,14 @@ export const HeroSection = () => {
             </span>
             <span className="ml-2 opacity-0 animate-fade-in-delay-2"> Kor</span>
           </h1>
+          <div className="w-48 h-48 mx-auto overflow-hidden rounded-full">
+            <img
+              src="./src/assets/Abe_kor.png"
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+            />
+          </div>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-in-delay-3">
-            I'm a passionate software developer specializing in building
-            exceptional digital experiences. Welcome to my portfolio!
+            Welcome to my portfolio!
           </p>
           <div className="pt-4 opacity-0 animate-fade-in-delay-4">
             <a href="#projects" className="main-button">
