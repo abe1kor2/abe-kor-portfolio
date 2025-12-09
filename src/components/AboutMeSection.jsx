@@ -37,7 +37,7 @@ export const AboutMeSection = () => {
                 Get in Touch
               </a>
               <a
-                href="./src/assets/Abe_Kor_Resume.pdf"
+                href="/Abe_Kor_Resume.pdf"
                 className="px-6 py-2 border border-primary text-primary rounded-md hover:bg-primary/10 transition-colors text-center"
                 download
               >

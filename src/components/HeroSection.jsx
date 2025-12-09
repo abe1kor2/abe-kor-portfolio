@@ -18,7 +18,8 @@ export const HeroSection = () => {
           </h1>
           <div className="w-48 h-48 mx-auto overflow-hidden rounded-full">
             <img
-              src="./src/assets/Abe_kor.png"
+              src="/Abe_kor.png"
+              alt="Abe Kor"
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
             />
           </div>
