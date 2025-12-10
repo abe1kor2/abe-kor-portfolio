@@ -92,7 +92,12 @@ export const AboutMeSection = () => {
                   </p>
                   <p className="text-muted-foreground">
                     Contributed to the launch of{" "}
-                    <a href="https://www.breakr.app/" className="text-primary">
+                    <a
+                      href="https://www.breakr.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary"
+                    >
                       Breakr
                     </a>{" "}
                     application version 2.0.
